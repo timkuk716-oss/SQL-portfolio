@@ -13,8 +13,12 @@ WHERE gender = 'f'
 ORDER BY registered_at;
 
 -- #2. Поиск по тексту: LIKE и шаблоны
--- Товары, в названии которых есть "а"; и имена клиентов на букву "В".
-SELECT name, category FROM products WHERE name LIKE '%а%';
+-- Товары, в названии которых есть "а" (шаблон '%а%' — подстрока в любом месте),
+-- и клиенты, чьё имя начинается на "В" (шаблон 'В%' — только начало строки).
+-- Два поиска склеены через UNION ALL, колонка kind показывает, откуда строка.
+SELECT 'товар'  AS kind, name FROM products  WHERE name LIKE '%а%'
+UNION ALL
+SELECT 'клиент' AS kind, name FROM customers WHERE name LIKE 'В%';
 
 -- #3. Агрегация: COUNT(*) vs COUNT(колонка), SUM, AVG, MAX, ROUND
 -- Сводка по оплаченным заказам.
@@ -146,7 +150,8 @@ SELECT c.name,
 FROM orders o
 JOIN customers c ON c.customer_id = o.customer_id
 WHERE o.status = 'paid'
-GROUP BY c.customer_id, c.name;
+GROUP BY c.customer_id, c.name
+ORDER BY total_spent DESC, c.name;
 
 -- #17. Остаток от деления (%) — чётные/нечётные
 -- Пометим заказы по чётности номера.
